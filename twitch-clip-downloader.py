@@ -36,6 +36,7 @@ def download_clips(valid_clips: list):
         3. clip id  
     """
 
+    # Return if no clips are valid
     if len(valid_clips) == 0:
         print("[ NOTE ] All clips up to date, not downloading.")
         return
@@ -44,7 +45,7 @@ def download_clips(valid_clips: list):
 
     i = 1
     for clip in valid_clips:
-        print(f"{i} / {len(valid_clips)} - {int(i / len(valid_clips) * 100)}%")
+        print(f"{i} / {len(valid_clips)} - {int(i / len(valid_clips) * 100)}% [{channel}]")
         clip_name = f'{channel}_{clip["title"]}_{clip["id"]}.mkv'
         os.system(f"twitch-dl download -o '{clip_name}' -q source {clip["url"]}")
         os.rename(clip_name, target_clip_dir+clip_name)
@@ -73,8 +74,19 @@ def prepare_clips():
 
     print("[ .. ] Preparing clips..")
 
+    # Exit if {temporary_info_file_filename} does not exist
+    if not os.path.exists(temporary_info_file_filename):
+        print(f"[ WARNING ] Could not find {temporary_info_file_filename}.")
+        exit(0)
+
     with open(temporary_info_file_filename) as f:
         clip_information = json.load(f)
+
+    # Create {target_clip_dir} if necessary
+    if not os.path.exists(target_clip_dir):
+        os.mkdir(target_clip_dir)
+        print(f"[ INFO ] Created directory {target_clip_dir}.")
+
     stored_clips = os.listdir(target_clip_dir)
     
     _valid_clips = []
@@ -88,21 +100,34 @@ def prepare_clips():
     return _valid_clips
 
 def twitch_clip_downloader_handler():
+
     # Get channel name through user input
-    print("[ DOWNLOAD ] Please enter the channel name")
-    global channel
-    channel = input(">> ")
+    print("[ DOWNLOAD ] Please enter one or more channel name(s) to download clips from.")
+    print("[ DOWNLOAD ] For multiple channels seperate with a space between names.")
+    user_input = input(">> ")
+    channels = user_input.split(" ")
 
-    # Get clip information and store as {temporary_info_file_filename}
-    fetch_clip_information()
+    # Handle all given channel names
+    for c in channels:
 
-    # Extract all clips, that need to be downloaded
-    valid_clips = prepare_clips()
+        # Skip empty entries
+        if c == "":
+            continue
 
-    # Download clips and store in {target_clip_dir}
-    download_clips(valid_clips=valid_clips)
+        global channel
+        channel = c
 
-    clean_up()
+        # Get clip information and store as {temporary_info_file_filename}
+        fetch_clip_information()
+
+        # Extract all clips, that need to be downloaded
+        valid_clips = prepare_clips()
+
+        # Download clips and store in {target_clip_dir}
+        download_clips(valid_clips=valid_clips)
+
+        clean_up()
+        print("")
 
 if __name__ == "__main__":
     twitch_clip_downloader_handler()
