@@ -20,7 +20,7 @@ def detect_eyes(_frame, offset=0):
     will call it self again to check neighboring frames until eyes are found.
     """
     
-    print(f"[ .. ] Searching eyes with offset of {offset}..")
+    # print(f"[ .. ] Searching eyes with offset of {offset}..")
 
     # Convert to gray scale and start searching
     gray_frame = cv2.cvtColor(_frame, cv2.COLOR_BGR2GRAY)
@@ -62,7 +62,7 @@ def face_tracker_handler(file_path: str):
     global loaded_video, loaded_video_length, c
 
     # Load video
-    loaded_video = cv2.VideoCapture(filename=f)
+    loaded_video = cv2.VideoCapture(filename=file_path)
     
     # Video length in frames
     loaded_video_length = int(loaded_video.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -72,8 +72,6 @@ def face_tracker_handler(file_path: str):
     c = 0
     while loaded_video.isOpened():
 
-        print(f"[ .. ] {int(c/loaded_video_length * 100)}% [{c} / {loaded_video_length}] - Processing..")
-
         # Read the video
         res, frame = loaded_video.read()
 
@@ -81,6 +79,8 @@ def face_tracker_handler(file_path: str):
             print("[ NOTE ] Finished reading the video file.")
             loaded_video.release()
             break
+
+        print(f"[ .. ] {int(c/loaded_video_length * 100)}% [{c} / {loaded_video_length}] - Processing..")
 
         # Detect all eyes in or around the current frame
         detect_eyes(frame)
@@ -138,4 +138,4 @@ loaded_video_length = 0 # Length of loaded video
 c = 0                   # Counter to keep track of frames
 
 if __name__ == "__main__":
-    face_tracker_handler(f)
+    face_tracker_handler(file_path=f)
