@@ -47,7 +47,7 @@ def download_clips(valid_clips: list):
     for clip in valid_clips:
         print(f"{i} / {len(valid_clips)} - {int(i / len(valid_clips) * 100)}% [{channel}]")
         clip_name = f'{channel}_{clip["title"]}_{clip["id"]}.mkv'
-        os.system(f"twitch-dl download -o '{clip_name}' -q source {clip["url"]}")
+        os.system(f'twitch-dl download -o "{clip_name}" -q source {clip["url"]}')
         os.rename(clip_name, target_clip_dir+clip_name)
         i += 1
 
