@@ -31,8 +31,13 @@ def cropper_handler(return_cropped_clips=False):
     Main function of this script. Likely to be called when imported as module.
     """
 
+    print("[ .. ] Starting cropper module..")
+
     # Loads the data from given directories
-    clips, tracking_data = load_data()
+    clips, tracking_data, tracking_data_file_names = load_data()
+
+    # Remove the file type ending (last 4 chars: .xml)
+    tracking_data_names = [t[:len(t)-4] for t in tracking_data_file_names]
     
     # Iterate through all found clips and crop them
     cropped_clips = []
@@ -40,10 +45,13 @@ def cropper_handler(return_cropped_clips=False):
 
         # Pass the loaded data to an extra subclip creation handler that reads that data.
         # The cropped clips will get returned
-        cropped_clips.append(handle_tracking_data(clip=clips[i], tracking_data=tracking_data[i]))
+        cropped_clips.append(handle_tracking_data(clips[i], tracking_data[i]))
     
+    # If flag is set, return the cropped clips and their clip names
     if return_cropped_clips:
-        return cropped_clips
+        return cropped_clips, tracking_data_names
+
+    print("[ OK ] cropper module has finished.")
 
 def handle_tracking_data(clip: VideoFileClip, tracking_data: pd.DataFrame):
 
@@ -94,24 +102,26 @@ def handle_tracking_data(clip: VideoFileClip, tracking_data: pd.DataFrame):
 def load_data():
 
     """
-    Loads data (clips and tracking data) and returns it.
+    Loads data (clips, tracking data and the file names of the tracking data) and returns it.
     """
 
     print("[ .. ] Loading data..")
 
     tracking_data_file_names = os.listdir(tracking_data_dir)
     tracking_data_file_names.sort()
-    tracking_data = []
+
     clips = []
+    tracking_data = []
+    valid_tracking_data_file_names = []
 
-
+    # Exits if the amount of clips and tracking data is unequal.
+    # Usually this happens if the tracker has not finished.
     if len(os.listdir(clip_dir)) != len(tracking_data_file_names):
         print("[ WARNING ] There is a mismatch in the amount of tracking data files and clips.")
         print("[ WARNING ] Please ensure first each clip was analyzed.")
         exit()
-    
-    print(f"[ NOTE ] Found {len(tracking_data_file_names)} clips and their tracking data.")
 
+    # Import clips as VideoFileClips and the face tracking data as dataframes
     for t in tracking_data_file_names:
 
         # Skip broken clips
@@ -119,13 +129,14 @@ def load_data():
             print(f"[ NOTE ] Found broken clip ({t}), skipping.")
             continue    
         
-        # Load and append clips and tracking data
-        tracking_data.append(pd.read_xml(tracking_data_dir+t))
+        # Load and append clips, tracking data and file names
         clips.append(VideoFileClip(clip_dir+t[:len(t)-4]+".mkv"))
+        tracking_data.append(pd.read_xml(tracking_data_dir+t))
+        valid_tracking_data_file_names.append(t)
 
     print("[ OK ] Data successfully loaded.")
 
-    return clips, tracking_data
+    return clips, tracking_data, valid_tracking_data_file_names
 
 if __name__ == "__main__":
     pass

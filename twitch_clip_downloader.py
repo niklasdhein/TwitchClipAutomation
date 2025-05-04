@@ -101,9 +101,11 @@ def prepare_clips():
 
 def twitch_clip_downloader_handler():
 
+    print("[ .. ] Starting twitch_clip_downloader module..")
+
     # Get channel name through user input
-    print("[ DOWNLOAD ] Please enter one or more channel name(s) to download clips from.")
-    print("[ DOWNLOAD ] For multiple channels seperate with a space between names.")
+    print("[ .. ] Please enter one or more channel name(s) to download clips from.")
+    print("[ .. ] For multiple channels seperate with a space between names.")
     user_input = input(">> ")
     channels = user_input.split(" ")
 
@@ -127,6 +129,8 @@ def twitch_clip_downloader_handler():
         download_clips(valid_clips=valid_clips)
 
         clean_up()
+
+        print("[ OK ] twitch_clip_downloader module has finished.")
         print("")
 
 if __name__ == "__main__":

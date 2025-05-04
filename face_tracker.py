@@ -124,6 +124,8 @@ def face_tracker_handler(file_dir="downloaded_clips/"):
     Main function to start the face tracker. Needs a path to video file it shall track faces from
     """
 
+    print("[ .. ] Starting face_tracker module..")
+
     global loaded_video, loaded_video_length, c, eye_data, eye_x, eye_y, eye_frame, broken, clip_dir
 
     # Set the global clip directory
@@ -199,6 +201,9 @@ def face_tracker_handler(file_dir="downloaded_clips/"):
         print("[ OK ] Stored successfully.")
         
         print()
+    
+    print("[ OK ] face_tracker module has finished.")
+    print()
 
 # Global vars
 
