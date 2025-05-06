@@ -6,7 +6,7 @@ import json
 import os
 
 # Constant Vars
-max_clip_limit = 10
+max_clip_limit = 20
 target_clip_dir = "downloaded_clips/"
 temporary_info_file_filename = "tmp_download_info.json"
 
@@ -116,6 +116,8 @@ def twitch_clip_downloader_handler():
         if c == "":
             continue
 
+        print(f"[ .. ] Handling {c} now..")
+
         global channel
         channel = c
 
@@ -130,8 +132,10 @@ def twitch_clip_downloader_handler():
 
         clean_up()
 
-        print("[ OK ] twitch_clip_downloader module has finished.")
         print("")
+    
+    print("[ OK ] twitch_clip_downloader module has finished.")
+    print()
 
 if __name__ == "__main__":
     twitch_clip_downloader_handler()

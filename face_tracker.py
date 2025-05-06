@@ -89,21 +89,101 @@ def detect_eyes(_frame, offset=0):
         return
 
     # Check for time out
-    elif offset >= step_size:
+    elif offset >= 0.7*step_size:
         eye_data = []
         print("[ WARNING ] Time out :/")
         return
 
     detect_eyes(_frame, offset)
 
-def detect_duplicate_files(file_names):
+def face_tracker_handler(file_dir="downloaded_clips/"):
+
+    """
+    Main function to start the face tracker. Needs a path to video file it shall track faces from
+    """
+
+    print("[ .. ] Starting face_tracker module..")
+
+    global loaded_video, loaded_video_length, c, eye_data, eye_x, eye_y, eye_frame, broken, clip_dir
+
+    # Change the standard clip directory if given
+    if file_dir != clip_dir:
+        clip_dir = file_dir
+
+    # Get only the valid file paths (non duplicates) 
+    valid_file_names = get_non_duplicate_files(os.listdir(clip_dir))
+
+    for v in valid_file_names:
+
+        print(f"[ .. ] Handling {clip_dir+v} now..")
+
+        # Does what the name says lol
+        reset_global_variables()
+
+        # Loads the current clip the loop iterates through as a cv2 object
+        loaded_video = cv2.VideoCapture(filename=clip_dir+v)
+        
+        # Gets video length in frames
+        loaded_video_length = int(loaded_video.get(cv2.CAP_PROP_FRAME_COUNT))
+
+        print("[ .. ] Starting analysis..")
+
+        c = 0
+        while loaded_video.isOpened():
+
+            # Read the video
+            res, frame = loaded_video.read()
+
+            # Break if end of the video is reached
+            if not res:
+                print("[ NOTE ] Finished reading the video file.")
+                loaded_video.release()
+                break
+            elif c > loaded_video_length:
+                print("[ WARNING ] The frame count exceeded the valid limit, reading done.")
+                loaded_video.release()
+                break
+
+            print(f"[ .. ] {int(c/loaded_video_length * 100)}% [{c} / {loaded_video_length}] - Processing..")
+
+            # Detect all eyes in or around the current frame
+            # Results will automatically be stored in global variables
+            detect_eyes(frame)
+
+            # Append the current eye data
+            append_eye_data()
+
+            # Advance step_size amount of frames
+            c += step_size
+            loaded_video.set(cv2.CAP_PROP_POS_FRAMES, c)
+        
+        print("[ OK ] Completed analysis.")
+
+        eye_data = pd.DataFrame({"x": eye_x, "y": eye_y, "frame": eye_frame,})
+        
+        # Change name wether a file was analzed successfully or not
+        if broken:
+            eye_data_filename = f"{face_tracking_data_dir}BROKEN_{v[:len(v)-4]}.xml"
+        else:
+            eye_data_filename = f"{face_tracking_data_dir}{v[:len(v)-4]}.xml"
+
+        # Export as .xml
+        eye_data.to_xml(eye_data_filename, index=False)
+        print(f"[ OK ] Stored successfully as {eye_data_filename}.")
+        
+        print()
+    
+    print("[ OK ] face_tracker module has finished.")
+    print()
+
+def get_non_duplicate_files(file_names):
     
     """
-    This function takes all file paths of the video files were the script should look for eyes.
-    The function will only return non-duplicates to prevent multiple analysis on one file. 
+    This function takes a list of file names and checks in the face tracking data directory for duplicates.
+    It only returns not duplicate file names.
     """
     
-    print("[ .. ] Checking for duplicates..")
+    print(f"[ .. ] Checking for duplicates in {face_tracking_data_dir}..")
 
     already_tracked = os.listdir(face_tracking_data_dir)
     valids = []
@@ -118,99 +198,22 @@ def detect_duplicate_files(file_names):
     print(f"[ OK ] Done. {len(valids)} valid, {len(duplicates)} duplicate.")
     return valids
 
-def face_tracker_handler(file_dir="downloaded_clips/"):
-
+def reset_global_variables():
     """
-    Main function to start the face tracker. Needs a path to video file it shall track faces from
+    This function resets some global variables (eye_data, eye_x, eye_y, eye_frame, broken).
+    This is neccessary because if multiple clips are imported to be analyzed for face tracking,
+    the values of these variables could lead to false results.
     """
 
-    print("[ .. ] Starting face_tracker module..")
-
-    global loaded_video, loaded_video_length, c, eye_data, eye_x, eye_y, eye_frame, broken, clip_dir
-
-    # Set the global clip directory
-    clip_dir = file_dir
-
-    # Get only the valid file paths (non duplicates) 
-    valid_file_names = detect_duplicate_files(os.listdir(clip_dir))
-
-    for v in valid_file_names:
-
-        print(f"[ .. ] Handling {clip_dir+v} now..")
-
-        # Reset global vars
-        eye_data = []
-        eye_x, eye_y, eye_frame = [], [], []
-        broken = False
-
-        # Load video
-        loaded_video = cv2.VideoCapture(filename=clip_dir+v)
-        
-        # Video length in frames
-        loaded_video_length = int(loaded_video.get(cv2.CAP_PROP_FRAME_COUNT))
-
-        print("[ .. ] Starting analysis..")
-
-        c = 0
-        while loaded_video.isOpened():
-
-            # Read the video
-            res, frame = loaded_video.read()
-
-            # Handling when end of file is reached
-            if not res:
-                print("[ NOTE ] Finished reading the video file.")
-                loaded_video.release()
-                break
-            elif c > loaded_video_length:
-                print("[ WARNING ] The frame count exceeded the valid limit, reading done.")
-                loaded_video.release()
-                break
-
-            print(f"[ .. ] {int(c/loaded_video_length * 100)}% [{c} / {loaded_video_length}] - Processing..")
-
-            # Detect all eyes in or around the current frame
-            detect_eyes(frame)
-
-            # Append the current eye data
-            append_eye_data()
-
-            # Advance 60 frames (2sec at 30fps)
-            c += step_size
-            loaded_video.set(cv2.CAP_PROP_POS_FRAMES, c)
-        
-        print("[ OK ] Completed analysis.")
-
-        print("[ .. ] Converting data..")
-        eye_data = pd.DataFrame({
-            "x": eye_x,
-            "y": eye_y,
-            "frame": eye_frame,
-        })
-        print("[ OK ] Conversion complete.") 
-
-        # Change name wether a file was analzed successfully or not
-        if broken:
-            eye_data_filename = f"{face_tracking_data_dir}BROKEN_{v[:len(v)-4]}.xml"
-        else:
-            eye_data_filename = f"{face_tracking_data_dir}{v[:len(v)-4]}.xml"
-
-        # Export as .xml
-        print(f"[ .. ] Storing data in {eye_data_filename}..")
-        eye_data.to_xml(eye_data_filename, index=False)
-        print("[ OK ] Stored successfully.")
-        
-        print()
-    
-    print("[ OK ] face_tracker module has finished.")
-    print()
+    global eye_data, eye_x, eye_y, eye_frame, broken
+    eye_data, eye_x, eye_y, eye_frame = [], [], [], []
+    broken = False
 
 # Global vars
 
 # Standard directory where downloaded clips are stored.
 # If a different directiory is passed this value gets overwritten.
 clip_dir = "downloaded_clips/" 
-
 face_tracking_data_dir = "face_tracking_data/"
 face_classifier = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
 
@@ -224,4 +227,4 @@ c = 0                   # (C)ounter to keep track of frames
 step_size = 120         # Number of frames which c gets increased by (new default 120)
 
 if __name__ == "__main__":
-    pass
+    print("[ NOTE ] To use this script, please import it and call 'face_tracker_handler'.")
