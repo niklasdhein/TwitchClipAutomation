@@ -6,7 +6,7 @@ import json
 import os
 
 # Constant Vars
-max_clip_limit = 20
+max_clip_limit = 10
 target_clip_dir = "downloaded_clips/"
 temporary_info_file_filename = "tmp_download_info.json"
 
@@ -47,6 +47,13 @@ def download_clips(valid_clips: list):
     for clip in valid_clips:
         print(f"{i} / {len(valid_clips)} - {int(i / len(valid_clips) * 100)}% [{channel}]")
         clip_name = f'{channel}_{clip["title"]}_{clip["id"]}.mkv'
+
+        # Skip invalid clips
+        if "/" in clip_name:
+            print(f"[ WARNING ] {clip_name} is invalid, skipping..")
+            i += 1
+            continue
+
         os.system(f'twitch-dl download -o "{clip_name}" -q source {clip["url"]}')
         os.rename(clip_name, target_clip_dir+clip_name)
         i += 1

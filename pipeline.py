@@ -1,6 +1,7 @@
 # Custom modules
 import cropper
 import face_tracker as tracker
+import subtitle_creator as subtitles
 import twitch_clip_downloader as downloader
 
 # other
@@ -60,13 +61,20 @@ if __name__ == "__main__":
         video_file_clip = VideoFileClip(download_dir+clip)
         dataframe = pd.read_xml(face_tracking_data_dir+clip[:len(clip)-4]+".xml")
 
-        # Pass to cropper and get results
+
+        # Get cropped VideoFileClips 
         cropped_clips = cropper.cropper_handler(video_file_clip, dataframe)
+
+        # Get SubtitleClips
+        subtitle_clips = subtitles.subtitle_creator_handler(download_dir+clip)
+
+        # Add all clips together in one list
+        all_clips = cropped_clips + subtitle_clips
 
         # Export
         filename = clip[:len(clip)-4]+".mp4"
         print(f"[ .. ] Starting export of {filename}..")
-        CompositeVideoClip(cropped_clips).write_videofile(filename=export_dir+filename, fps=24, threads=24, preset="ultrafast")
+        CompositeVideoClip(all_clips).write_videofile(filename=export_dir+filename, fps=24, threads=24, preset="ultrafast")
         print("[ OK ] Export finished.")
 
     print("[ OK ] Complete pipeline has finished.")

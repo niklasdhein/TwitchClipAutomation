@@ -13,6 +13,11 @@ def crop_clip(clip: VideoFileClip, start_time, end_time, center_position):
     The crop is centered around the passed center position. After cropping the clip is returned.
     """
 
+    # Check if start time is actually after the clip has finished. Could happen due to float estimation
+    # when the last frame is the start time.
+    if start_time >= clip.duration:
+        start_time = clip.duration - 0.001
+
     subclip = clip.subclipped(start_time, end_time).with_start(start_time).with_end(end_time)
 
     # Keep the crop in bounds
