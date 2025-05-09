@@ -12,22 +12,22 @@ def get_subtitles(video_file):
 
     print("[ .. ] Generating subtitles..")
 
-    try:
-        # Set and pass config to transcriber
-        config = aai.TranscriptionConfig(speech_model=aai.SpeechModel.best, language_code="de")
-        transcript = aai.Transcriber(config=config).transcribe(video_file)
-
-    except aai.types.TranscriptError:
-        print("[ WARNING ] Unable to create subtitles.")
-        return []
+    # Set and pass config to transcriber
+    config = aai.TranscriptionConfig(speech_model=aai.SpeechModel.best, language_code="de")
+    transcript = aai.Transcriber(config=config).transcribe(video_file)
 
     # Raise error if neccessary
     if transcript.status == "error":
         print("[ WARNING ] Unable to create subtitles.")
         return []
     
-    # Export transcript as srt format
-    srt_output = transcript.export_subtitles_srt(chars_per_caption=18)
+    try:
+        # Export transcript as srt format
+        srt_output = transcript.export_subtitles_srt(chars_per_caption=18)
+
+    except aai.types.TranscriptError:
+        print("[ WARNING ] Unable to export subtitles to srt format.")
+        return []
 
     # Parse srt to python object
     subtitles = list(srt.parse(srt_output))
