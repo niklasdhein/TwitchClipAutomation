@@ -45,6 +45,7 @@ if __name__ == "__main__":
     # Check if export directory exists
     if not os.path.exists(export_dir):
         os.mkdir(export_dir)
+        print(f"[ NOTE ] Created directory {export_dir}.")
 
     non_duplicate_clips = get_non_duplicate_files_in_dir(os.listdir(download_dir), export_dir)
 

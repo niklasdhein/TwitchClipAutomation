@@ -109,6 +109,11 @@ def face_tracker_handler(file_dir="downloaded_clips/"):
     # Change the standard clip directory if given
     if file_dir != clip_dir:
         clip_dir = file_dir
+    
+    # Check if face tracking directory exists
+    if not os.path.exists(face_tracking_data_dir):
+        os.mkdir(face_tracking_data_dir)
+        print(f"[ NOTE ] Created directory {face_tracking_data_dir}.")
 
     # Get only the valid file paths (non duplicates) 
     valid_file_names = get_non_duplicate_files(os.listdir(clip_dir))
