@@ -3,7 +3,7 @@ import assemblyai as aai
 from moviepy import TextClip
 import srt
 
-# AssemblyAI API-Key: Aus Umgebungsvariable oder Fallback-Wert
+# Instead of hardcoded key use environment variable
 api_key = os.getenv("ASSEMBLYAI_API_KEY", "DEIN_ASSEMBLYAI_API_KEY")
 download_dir = "downloaded_clips/"
 
@@ -36,7 +36,7 @@ def get_subtitles(video_file):
 
     # Go through all subtitles and create a TextClip for each of them
     text_clip_subtitles = []
-    font_path = '/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc'
+    font_path = '/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc'   # Make sure custom font is installed
     for s in subtitles:
         text_clip_subtitles.append(TextClip(text=s.content, method="caption", color="white",
                                             size=(int(0.9*608), 1080), margin=(int(0.05*608), 0), 
