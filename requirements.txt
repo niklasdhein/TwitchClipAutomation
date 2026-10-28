@@ -1,0 +1,6 @@
+assemblyai>=0.20.0
+lxml>=4.9.0
+moviepy>=2.0.0
+opencv-python>=4.8.0
+pandas>=2.0.0
+srt>=3.5.0

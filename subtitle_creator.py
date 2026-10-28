@@ -1,8 +1,10 @@
+import os
 import assemblyai as aai
 from moviepy import TextClip
 import srt
 
-api_key = "YOUR_ASSEMBLYAI_API_KEY"
+# AssemblyAI API-Key: Aus Umgebungsvariable oder Fallback-Wert
+api_key = os.getenv("ASSEMBLYAI_API_KEY", "DEIN_ASSEMBLYAI_API_KEY")
 download_dir = "downloaded_clips/"
 
 # Set API key
