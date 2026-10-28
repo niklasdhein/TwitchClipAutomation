@@ -1,20 +1,20 @@
-# TwitchClipAutomation 🎬📱
+# TwitchClipAutomation
 
 Automatisierte End-to-End Pipeline in Python, um Twitch-Clips (16:9) mit Computer Vision und automatischer Spracherkennung in modernes 9:16 Vertical Video (TikTok / YouTube Shorts / Reels) umzuwandeln.
 
 ---
 
-## 🚀 Features
+## Features
 
-- **Clip-Downloader:** Automatisierter Abruf und Download der beliebtesten Clips ausgewählter Twitch-Kanäle via `twitch-dl`.
-- **Computer Vision Face Tracking:** Erkennt Gesichter und Augenpositionen mittels Haar-Cascade-Klassifikatoren (`OpenCV`), um den relevanten Bereich im Bild dynamisch zu verfolgen.
-- **Smart Cropping (9:16):** Schneidet das 16:9-Ausgangsmaterial zentriert auf das getrackte Gesicht zu und hält das Motiv stabil im vertikalen Fokus (`MoviePy`).
+- **Clip-Downloader:** Abruf und Download Clips ausgewählter Twitch-Kanäle via `twitch-dl`.
+- **Computer Vision Face Tracking:** Erkennt Gesichter und Augenpositionen mittels Haar-Cascade-Klassifikatoren (`OpenCV`), um den relevanten Bereich im Bild zu verfolgen.
+- **Smart Cropping (9:16):** Schneidet das 16:9-Ausgangsmaterial zentriert auf das getrackte Gesicht zu und hält das Motiv im vertikalen Fokus (`MoviePy`).
 - **Automatisierte Untertitel:** Transkription des Audiosignals via `AssemblyAI`, Formatierung und synchrone Einblendung als animierte Untertitel.
-- **Modulare Pipeline:** Alle Schritte können eigenständig oder als zusammenhängende Batch-Pipeline ausgeführt werden.
+- **Modulare Pipeline:** Alle Schritte können eigenständig oder als zusammenhängende Pipeline ausgeführt werden.
 
 ---
 
-## 🏗️ Pipeline-Architektur
+## Pipeline-Architektur
 
 ```text
 [ Twitch Channel ]
@@ -35,7 +35,7 @@ Automatisierte End-to-End Pipeline in Python, um Twitch-Clips (16:9) mit Compute
 
 ---
 
-## 📋 Voraussetzungen
+## Voraussetzungen
 
 - **Python 3.10+**
 - **FFmpeg** (für Video- und Audiokomposition durch MoviePy)
@@ -44,7 +44,7 @@ Automatisierte End-to-End Pipeline in Python, um Twitch-Clips (16:9) mit Compute
 
 ---
 
-## 🛠️ Installation & Setup
+## Installation & Setup
 
 1. **Repository klonen:**
    ```bash
@@ -60,7 +60,7 @@ Automatisierte End-to-End Pipeline in Python, um Twitch-Clips (16:9) mit Compute
    ```
 
 3. **API-Key konfigurieren:**
-   Setze deinen AssemblyAI API-Key als Umgebungsvariable:
+   Setze AssemblyAI API-Key als Umgebungsvariable:
    ```bash
    export ASSEMBLYAI_API_KEY="dein_assemblyai_api_key"
    ```
@@ -68,7 +68,7 @@ Automatisierte End-to-End Pipeline in Python, um Twitch-Clips (16:9) mit Compute
 
 ---
 
-## 💻 Verwendung
+## Verwendung
 
 ### Gesamte Pipeline starten:
 ```bash
@@ -84,7 +84,7 @@ python pipeline.py
 
 ---
 
-## 📂 Projektstruktur
+## Projektstruktur
 
 ```text
 .
