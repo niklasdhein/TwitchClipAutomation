@@ -9,7 +9,6 @@ Automatisierte End-to-End Pipeline in Python, um Twitch-Clips (16:9) mit Compute
 - **Clip-Downloader:** Abruf und Download Clips ausgewählter Twitch-Kanäle via `twitch-dl`.
 - **Computer Vision Face Tracking:** Erkennt Gesichter und Augenpositionen mittels Haar-Cascade-Klassifikatoren (`OpenCV`), um den relevanten Bereich im Bild zu verfolgen.
 - **Smart Cropping (9:16):** Schneidet das 16:9-Ausgangsmaterial zentriert auf das getrackte Gesicht zu und hält das Motiv im vertikalen Fokus (`MoviePy`).
-- **Automatisierte Untertitel:** Transkription des Audiosignals via `AssemblyAI`, Formatierung und synchrone Einblendung als animierte Untertitel.
 - **Modulare Pipeline:** Alle Schritte können eigenständig oder als zusammenhängende Pipeline ausgeführt werden.
 
 ---
@@ -26,8 +25,6 @@ Automatisierte End-to-End Pipeline in Python, um Twitch-Clips (16:9) mit Compute
         │                                       │
         ▼                                       ▼
  [ pipeline.py ] ◄────────────────── [ cropper.py ] (9:16 Zuschnitt)
-        │
-        ├──► [ subtitle_creator.py ] ──► Transkription & Untertitel (SRT / TextClips)
         │
         ▼
 [ Fertiges Kurzvideo (9:16 MP4) in exported_clips/ ]
@@ -75,7 +72,7 @@ Automatisierte End-to-End Pipeline in Python, um Twitch-Clips (16:9) mit Compute
 python pipeline.py
 ```
 1. Gib den/die Twitch-Kanalnamen ein (getrennt durch Leerzeichen).
-2. Die Pipeline lädt die Clips herunter, analysiert die Gesichter, schneidet die Videos auf 9:16 zu, generiert Untertitel und speichert die finalen Videos in `exported_clips/`.
+2. Die Pipeline lädt die Clips herunter, analysiert die Gesichter, schneidet die Videos auf 9:16 zu und speichert die finalen Videos in `exported_clips/`.
 
 ### Einzelne Module ausführen:
 - **Nur Clips herunterladen:** `python twitch_clip_downloader.py`
